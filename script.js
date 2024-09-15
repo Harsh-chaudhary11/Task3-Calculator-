@@ -1,25 +1,23 @@
 let display = document.getElementById('display');
-let currentInput = ''; // Stores current number input
-let operator = '';     // Stores current operator
+let currentInput = '';
+let operator = '';
 let firstNumber = null;
 let secondNumber = null;
 let result = '';
-let isOperatorClicked = false; // Tracks if an operator was clicked
+let isOperatorClicked = false;
 
-// Function to append numbers and decimal points to the display
 function appendToDisplay(value) {
     if (isOperatorClicked) {
-        currentInput = '';  // Clear display after operator is clicked for new number
+        currentInput = '';
         isOperatorClicked = false;
     }
 
-    if (value === '.' && currentInput.includes('.')) return; // Prevent multiple decimals
+    if (value === '.' && currentInput.includes('.')) return;
 
     currentInput += value;
     display.value = currentInput;
 }
 
-// Function to clear the display and reset variables
 function clearDisplay() {
     currentInput = '';
     operator = '';
@@ -27,33 +25,36 @@ function clearDisplay() {
     secondNumber = null;
     result = '';
     isOperatorClicked = false;
-    display.value = '0'; // Show 0 when cleared
+    display.value = '0';
 }
 
-// Function to toggle positive/negative sign of the current number
 function toggleSign() {
     if (currentInput) {
         currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
         display.value = currentInput;
     }
 }
-
-// Function to set the operation and store the first number
 function setOperation(op) {
     if (currentInput !== '') {
+        if (op === '%') {
+            // Directly apply percentage operation when '%' is clicked
+            currentInput = (parseFloat(currentInput) / 100).toString();
+            display.value = currentInput;
+            return;
+        }
+
         if (!firstNumber) {
             firstNumber = parseFloat(currentInput);
         } else if (!isOperatorClicked) {
-            calculate();  // If an operation is clicked after inputting numbers, calculate the result
-            firstNumber = result;  // The result becomes the first number for the next calculation
+            calculate();
+            firstNumber = result;
         }
 
         operator = op;
-        isOperatorClicked = true;  // Indicates that the operator was clicked
+        isOperatorClicked = true;
     }
 }
 
-// Function to perform the calculation based on the operator
 function calculate() {
     if (operator && currentInput !== '') {
         secondNumber = parseFloat(currentInput);
@@ -76,9 +77,6 @@ function calculate() {
             case '/':
                 result = secondNumber !== 0 ? firstNumber / secondNumber : 'Error: Division by zero';
                 break;
-            case '%':
-                result = firstNumber / 100;
-                break;
             default:
                 result = 'Error: Invalid operation';
                 break;
@@ -87,11 +85,10 @@ function calculate() {
         display.value = result;
         currentInput = result.toString();
         operator = '';
-        firstNumber = result;  // Store result as firstNumber for chained calculations
+        firstNumber = result;
     }
 }
 
-// Function to handle keyboard input
 document.addEventListener('keydown', function(event) {
     let keyPressed = event.key;
 
